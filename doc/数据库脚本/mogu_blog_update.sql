@@ -1197,7 +1197,7 @@ ALTER TABLE t_media_info ADD sort int(9) UNSIGNED NOT NULL DEFAULT 1 COMMENT '�
 /*
 * 更新举报表, 增加举报标题、内容
 **/
-ALTER TABLE t_report MODIFY COLUMN report_content text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '举报标题、内容';
+ALTER TABLE t_report add COLUMN report_content text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '举报标题、内容';
 
 
 CREATE TABLE `t_problem` (

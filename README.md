@@ -118,6 +118,12 @@
 
 目前，蘑菇社区版源码暂未开源，可通过 [赞助蘑菇](https://www.moguit.cn/version) 的方式获取源码授权，详情可添加陌溪微信了解：[coder_moxi](https://gitee.com/moxi159753/mogu_blog_v2/raw/Nacos/doc/images/qq/coder_moxi.png) (备注：蘑菇社区)
 
+<p align=center >
+    <a href="https://www.moguit.cn/version">
+            <img src="./doc/images/gitee/mogu_blog_business.png" width="800" />
+    </a>
+</p>
+
 ## 蘑菇博客Go版本
 
 [**mogu_blog_go**](https://gitee.com/moxi159753/mogu_blog_go) 是根据**蘑菇博客**改编的一个 **Golang** 简化版分支，实现了蘑菇博客后台原有的大部分**基础功能**，同时前端代码和数据库基本没有变化，因此可以直接使用蘑菇博客原有的前端页面。

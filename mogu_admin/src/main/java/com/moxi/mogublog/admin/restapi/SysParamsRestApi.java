@@ -4,10 +4,13 @@ package com.moxi.mogublog.admin.restapi;
 import com.moxi.mogublog.admin.annotion.AuthorityVerify.AuthorityVerify;
 import com.moxi.mogublog.admin.annotion.AvoidRepeatableCommit.AvoidRepeatableCommit;
 import com.moxi.mogublog.admin.annotion.OperationLogger.OperationLogger;
+import com.moxi.mogublog.commons.entity.SysParams;
 import com.moxi.mogublog.utils.ResultUtil;
+import com.moxi.mogublog.xo.dto.SysParamsPageDTO;
 import com.moxi.mogublog.xo.service.SysParamsService;
 import com.moxi.mogublog.xo.vo.SysParamsVO;
 import com.moxi.mougblog.base.exception.ThrowableUtils;
+import com.moxi.mougblog.base.mybatis.page.vo.PageVO;
 import com.moxi.mougblog.base.validator.group.GetList;
 import com.moxi.mougblog.base.validator.group.Insert;
 import com.moxi.mougblog.base.validator.group.Update;
@@ -43,12 +46,16 @@ public class SysParamsRestApi {
     @AuthorityVerify
     @ApiOperation(value = "获取参数配置列表", notes = "获取参数配置列表", response = String.class)
     @PostMapping("/getList")
-    public String getList(@Validated({GetList.class}) @RequestBody SysParamsVO SysParamsVO, BindingResult result) {
+    public String getList(@Validated({GetList.class}) @RequestBody SysParamsPageDTO pageDTO, BindingResult result) {
 
         // 参数校验
         ThrowableUtils.checkParamArgument(result);
         log.info("获取参数配置列表");
-        return ResultUtil.successWithData(sysParamsService.getPageList(SysParamsVO));
+
+        pageDTO.setOrderColumn("sort,createTime");
+        pageDTO.setOrderType("desc,desc");
+        PageVO<SysParams> pageVO = sysParamsService.page(pageDTO);
+        return ResultUtil.successWithData(pageVO);
     }
 
     @AvoidRepeatableCommit

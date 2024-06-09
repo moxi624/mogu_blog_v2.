@@ -1,8 +1,6 @@
 package com.moxi.mogublog.xo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moxi.mogublog.commons.entity.SysParams;
 import com.moxi.mogublog.utils.RedisUtil;
 import com.moxi.mogublog.utils.ResultUtil;
@@ -42,26 +40,6 @@ public class SysParamsServiceImpl extends SuperServiceImpl<SysParamsMapper, SysP
 
     @Autowired
     RedisUtil redisUtil;
-
-    @Override
-    public IPage<SysParams> getPageList(SysParamsVO sysParamsVO) {
-        QueryWrapper<SysParams> queryWrapper = new QueryWrapper<>();
-        // 参数名称
-        if (StringUtils.isNotEmpty(sysParamsVO.getParamsName())) {
-            queryWrapper.like(SQLConf.PARAMS_NAME, sysParamsVO.getParamsName().trim());
-        }
-        // 参数键名
-        if (StringUtils.isNotEmpty(sysParamsVO.getParamsKey())) {
-            queryWrapper.like(SQLConf.PARAMS_KEY, sysParamsVO.getParamsKey().trim());
-        }
-        Page<SysParams> page = new Page<>();
-        page.setCurrent(sysParamsVO.getCurrentPage());
-        page.setSize(sysParamsVO.getPageSize());
-        queryWrapper.eq(SQLConf.STATUS, EStatus.ENABLE);
-        queryWrapper.orderByDesc(SQLConf.SORT, SQLConf.CREATE_TIME);
-        IPage<SysParams> pageList = sysParamsService.page(page, queryWrapper);
-        return pageList;
-    }
 
     @Override
     public SysParams getSysParamsByKey(String paramsKey) {

@@ -16,12 +16,14 @@ import com.moxi.mogublog.xo.service.UserService;
 import com.moxi.mogublog.xo.vo.FeedbackVO;
 import com.moxi.mougblog.base.enums.EStatus;
 import com.moxi.mougblog.base.holder.RequestHolder;
+import com.moxi.mougblog.base.mybatis.plugin.query.LambdaQueryWrapperPlus;
 import com.moxi.mougblog.base.serviceImpl.SuperServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 反馈表 服务实现类
@@ -39,29 +41,21 @@ public class FeedbackServiceImpl extends SuperServiceImpl<FeedbackMapper, Feedba
 
     @Override
     public IPage<Feedback> getPageList(FeedbackVO feedbackVO) {
-        QueryWrapper<Feedback> queryWrapper = new QueryWrapper<>();
-        if (StringUtils.isNotEmpty(feedbackVO.getTitle())) {
-            queryWrapper.like(SQLConf.TITLE, feedbackVO.getTitle());
-        }
-
-        if (feedbackVO.getFeedbackStatus() != null) {
-            queryWrapper.eq(SQLConf.FEEDBACK_STATUS, feedbackVO.getFeedbackStatus());
-        }
+        LambdaQueryWrapperPlus<Feedback> queryWrapper = new LambdaQueryWrapperPlus<>();
+        queryWrapper.like(Feedback::getTitle, feedbackVO.getTitle());
+        queryWrapper.eq(Feedback::getFeedbackStatus, feedbackVO.getFeedbackStatus());
+        queryWrapper.eq(Feedback::getStatus, EStatus.ENABLE);
+        queryWrapper.orderByDesc(Feedback::getCreateTime);
 
         Page<Feedback> page = new Page<>();
         page.setCurrent(feedbackVO.getCurrentPage());
         page.setSize(feedbackVO.getPageSize());
-        queryWrapper.eq(SQLConf.STATUS, EStatus.ENABLE);
-        queryWrapper.orderByDesc(SQLConf.CREATE_TIME);
+
         IPage<Feedback> pageList = feedbackService.page(page, queryWrapper);
 
         List<Feedback> feedbackList = pageList.getRecords();
-        List<String> userUids = new ArrayList<>();
-        feedbackList.forEach(item -> {
-            if (StringUtils.isNotEmpty(item.getUserUid())) {
-                userUids.add(item.getUserUid());
-            }
-        });
+        List<String> userUids = feedbackList.stream().filter(item -> StringUtils.isNotEmpty(item.getUserUid()))
+                .map(Feedback::getUserUid).collect(Collectors.toList());
         List<User> userList = userService.getUserListByIds(userUids);
         Map<String, User> map = new HashMap<>();
         userList.forEach(item -> {

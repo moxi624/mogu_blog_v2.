@@ -28,15 +28,15 @@ public class PageDTO implements Serializable {
     private Long currentPage;
 
     /**
-     * 排序列，多个用逗号分开
+     * OrderBy排序字段（desc: 降序）
      */
     @Query(ignore = true)
-    private String orderColumn;
+    private String orderByDescColumn;
 
     /**
-     * 排序类型(asc 或 desc)，多个用逗号分开
+     * OrderBy排序字段（asc: 升序）
      */
     @Query(ignore = true)
-    private String orderType;
+    private String orderByAscColumn;
 
 }

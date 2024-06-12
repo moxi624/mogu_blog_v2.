@@ -15,12 +15,10 @@ import com.moxi.mougblog.base.mybatis.plugin.enums.QueryWay;
 import com.moxi.mougblog.base.result.ResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 扩展 QueryWrapper 类，提供更多功能
@@ -231,39 +229,49 @@ public class QueryWrapperPlus<T> extends QueryWrapper<T> {
      */
     private <D> void buildOrderByCondition(QueryWrapperPlus queryWrapper, Map<String, String> propertyColumnMap,
                                            List<Field> fieldList, D d) {
-        // 排序列
-        Field orderColumnField = fieldList.stream().filter(f -> FieldConstant.ORDER_COLUMN.equals(f.getName())).findFirst().orElse(null);
-        // 如果排序字段为空，或者不是 String 类型，不进行排序
-        Object orderColumnObj = getFieldValue(orderColumnField, d);
-        if (!(orderColumnObj instanceof String) || StringUtils.isNullBlank(orderColumnObj)) {
+        // 升序排序
+        List<String> columns = getOrderColumns(FieldConstant.ORDER_BY_ASC_COLUMN, propertyColumnMap, fieldList, d);
+        if (!CollectionUtils.isEmpty(columns)) {
+            queryWrapper.orderByAsc(columns.toArray());
             return;
         }
 
-        // 排序类型
-        Field orderTypeField = fieldList.stream().filter(f -> FieldConstant.ORDER_TYPE.equals(f.getName())).findFirst().orElse(null);
-        Object orderTypeObj = getFieldValue(orderTypeField, d);
-
-        String[] orderColumns = orderColumnObj.toString().split(ORDER_BY_COLUMN_SPLIT);
-        String[] orderTypes = orderTypeObj == null ? new String[] {} : orderTypeObj.toString().split(ORDER_BY_COLUMN_SPLIT);
-
-        // 构造排序
-        for (int i = 0; i < orderColumns.length; i++) {
-            String orderColumn = orderColumns[i];
-            if (StringUtils.isBlank(orderColumn)) {
-                continue;
-            }
-            // 校验排序字段是否存在
-            String column = propertyColumnMap.get(orderColumn);
-            if (StringUtils.isBlank(column)) {
-                String message = StringUtils.format("排序字段：{}，不存在", orderColumn);
-                throw new QueryException(message);
-            }
-
-            // 是否升序排序
-            boolean isAsc = i < orderTypes.length ? SqlKeyword.ASC.getSqlSegment().equalsIgnoreCase(orderTypes[i]) : true;
-            queryWrapper.orderBy(true, isAsc, column);
+        // 倒叙排序
+        columns = getOrderColumns(FieldConstant.ORDER_BY_DESC_COLUMN, propertyColumnMap, fieldList, d);
+        if (!CollectionUtils.isEmpty(columns)) {
+            queryWrapper.orderByDesc(columns.toArray());
+            return;
         }
+    }
 
+    /**
+     * 获取排序字段
+     * @param fieldName 排序属性名称
+     * @param propertyColumnMap T 属性和列名
+     * @param fieldList d 属性列表
+     * @param d 参数
+     * @param <D>
+     * @return
+     */
+    public <D> List<String> getOrderColumns(String fieldName, Map<String, String> propertyColumnMap, List<Field> fieldList, D d) {
+        Field orderByAscColumnField = fieldList.stream().filter(f -> StringUtils.isNotBlank(fieldName) && fieldName.equals(f.getName())).findFirst().orElse(null);
+        // 如果排序字段不为空，并且 String 类型，进行排序
+        Object orderColumnObj = getFieldValue(orderByAscColumnField, d);
+        if (orderColumnObj instanceof String && !StringUtils.isNullBlank(orderColumnObj)) {
+            // 校验排序字段是否存在
+            String[] orderColumns = String.valueOf(orderColumnObj).split(",");
+            List<String> columns = new ArrayList<>(orderColumns.length);
+            for (String orderColumn : orderColumns) {
+                String columnValue = propertyColumnMap.get(orderColumn);
+                if (StringUtils.isBlank(columnValue)) {
+                    String message = StringUtils.format("排序字段：{}，不存在", orderColumn);
+                    throw new QueryException(message);
+                }
+                columns.add(columnValue);
+            }
+            return columns;
+        }
+        return null;
     }
 
 }

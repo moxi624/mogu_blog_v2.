@@ -1,13 +1,10 @@
 package com.moxi.mogublog.xo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moxi.mogublog.commons.entity.Admin;
 import com.moxi.mogublog.commons.entity.Role;
 import com.moxi.mogublog.utils.RedisUtil;
 import com.moxi.mogublog.utils.ResultUtil;
-import com.moxi.mogublog.utils.StringUtils;
 import com.moxi.mogublog.xo.global.MessageConf;
 import com.moxi.mogublog.xo.global.RedisConf;
 import com.moxi.mogublog.xo.global.SQLConf;
@@ -41,20 +38,6 @@ public class RoleServiceImpl extends SuperServiceImpl<RoleMapper, Role> implemen
     private RoleService roleService;
     @Autowired
     private AdminService adminService;
-
-    @Override
-    public IPage<Role> getPageList(RoleVO roleVO) {
-        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        if (StringUtils.isNotEmpty(roleVO.getKeyword()) && StringUtils.isNotEmpty(roleVO.getKeyword().trim())) {
-            queryWrapper.like(SQLConf.ROLENAEM, roleVO.getKeyword().trim());
-        }
-        queryWrapper.eq(SQLConf.STATUS, EStatus.ENABLE);
-        Page<Role> page = new Page<>();
-        page.setCurrent(roleVO.getCurrentPage());
-        page.setSize(roleVO.getPageSize());
-        IPage<Role> pageList = roleService.page(page, queryWrapper);
-        return pageList;
-    }
 
     @Override
     public String addRole(RoleVO roleVO) {

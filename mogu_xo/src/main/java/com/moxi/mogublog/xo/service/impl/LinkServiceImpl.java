@@ -9,6 +9,7 @@ import com.moxi.mogublog.utils.CheckUtils;
 import com.moxi.mogublog.utils.RedisUtil;
 import com.moxi.mogublog.utils.ResultUtil;
 import com.moxi.mogublog.utils.StringUtils;
+import com.moxi.mogublog.xo.dto.LinkPageDTO;
 import com.moxi.mogublog.xo.global.MessageConf;
 import com.moxi.mogublog.xo.global.RedisConf;
 import com.moxi.mogublog.xo.global.SQLConf;
@@ -22,10 +23,12 @@ import com.moxi.mougblog.base.enums.ELinkStatus;
 import com.moxi.mougblog.base.enums.EStatus;
 import com.moxi.mougblog.base.global.BaseSQLConf;
 import com.moxi.mougblog.base.global.Constants;
+import com.moxi.mougblog.base.mybatis.page.vo.PageVO;
 import com.moxi.mougblog.base.serviceImpl.SuperServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -67,29 +70,16 @@ public class LinkServiceImpl extends SuperServiceImpl<LinkMapper, Link> implemen
     }
 
     @Override
-    public IPage<Link> getPageList(LinkVO linkVO) {
-        QueryWrapper<Link> queryWrapper = new QueryWrapper<>();
-        if (StringUtils.isNotEmpty(linkVO.getKeyword()) && !StringUtils.isEmpty(linkVO.getKeyword().trim())) {
-            queryWrapper.like(SQLConf.TITLE, linkVO.getKeyword().trim());
+    public PageVO<Link> getPageList(LinkPageDTO pageDTO) {
+        if (StringUtils.isBlank(pageDTO.getOrderByDescColumn()) && StringUtils.isBlank(pageDTO.getOrderByAscColumn())) {
+            pageDTO.setOrderByDescColumn(SQLConf.SORT);
         }
-        if (linkVO.getLinkStatus() != null) {
-            queryWrapper.eq(SQLConf.LINK_STATUS, linkVO.getLinkStatus());
+        PageVO<Link> pageVO = linkMapper.selectPage(pageDTO);
+        List<Link> linkList = pageVO.getRecords();
+        if (CollectionUtils.isEmpty(linkList)) {
+            return pageVO;
         }
-        if(StringUtils.isNotEmpty(linkVO.getOrderByAscColumn())) {
-            String column = StringUtils.underLine(new StringBuffer(linkVO.getOrderByAscColumn())).toString();
-            queryWrapper.orderByAsc(column);
-        }else if(StringUtils.isNotEmpty(linkVO.getOrderByDescColumn())) {
-            String column = StringUtils.underLine(new StringBuffer(linkVO.getOrderByDescColumn())).toString();
-            queryWrapper.orderByDesc(column);
-        } else {
-            queryWrapper.orderByDesc(SQLConf.SORT);
-        }
-        Page<Link> page = new Page<>();
-        page.setCurrent(linkVO.getCurrentPage());
-        page.setSize(linkVO.getPageSize());
-        queryWrapper.eq(SQLConf.STATUS, EStatus.ENABLE);
-        IPage<Link> pageList = linkService.page(page, queryWrapper);
-        List<Link> linkList = pageList.getRecords();
+
         final StringBuffer fileUids = new StringBuffer();
         // 给友情链接添加图片
         linkList.forEach(item -> {
@@ -118,8 +108,7 @@ public class LinkServiceImpl extends SuperServiceImpl<LinkMapper, Link> implemen
                 item.setPhotoList(pictureListTemp);
             }
         }
-        pageList.setRecords(linkList);
-        return pageList;
+        return pageVO;
     }
 
     @Override

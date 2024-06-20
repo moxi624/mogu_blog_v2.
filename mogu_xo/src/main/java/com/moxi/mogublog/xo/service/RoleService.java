@@ -1,6 +1,5 @@
 package com.moxi.mogublog.xo.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moxi.mogublog.commons.entity.Role;
 import com.moxi.mogublog.xo.vo.RoleVO;
 import com.moxi.mougblog.base.service.SuperService;
@@ -12,14 +11,6 @@ import com.moxi.mougblog.base.service.SuperService;
  * @date 2018-09-04
  */
 public interface RoleService extends SuperService<Role> {
-
-    /**
-     * 获取角色列表
-     *
-     * @param roleVO
-     * @return
-     */
-    public IPage<Role> getPageList(RoleVO roleVO);
 
     /**
      * 新增角色

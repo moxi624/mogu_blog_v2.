@@ -52,8 +52,7 @@ public class SysParamsRestApi {
         ThrowableUtils.checkParamArgument(result);
         log.info("获取参数配置列表");
 
-        pageDTO.setOrderColumn("sort,createTime");
-        pageDTO.setOrderType("desc,desc");
+        pageDTO.setOrderByDescColumn("sort,createTime");
         PageVO<SysParams> pageVO = sysParamsService.page(pageDTO);
         return ResultUtil.successWithData(pageVO);
     }

@@ -2,7 +2,9 @@ package com.moxi.mogublog.xo.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moxi.mogublog.commons.entity.Link;
+import com.moxi.mogublog.xo.dto.LinkPageDTO;
 import com.moxi.mogublog.xo.vo.LinkVO;
+import com.moxi.mougblog.base.mybatis.page.vo.PageVO;
 import com.moxi.mougblog.base.service.SuperService;
 
 import java.util.List;
@@ -26,10 +28,10 @@ public interface LinkService extends SuperService<Link> {
     /**
      * 获取友链列表
      *
-     * @param linkVO
+     * @param pageDTO
      * @return
      */
-    public IPage<Link> getPageList(LinkVO linkVO);
+    public PageVO<Link> getPageList(LinkPageDTO pageDTO);
 
     /**
      * 新增友链

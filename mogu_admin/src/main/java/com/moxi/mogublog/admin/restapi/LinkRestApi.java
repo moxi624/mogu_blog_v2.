@@ -5,6 +5,7 @@ import com.moxi.mogublog.admin.annotion.AuthorityVerify.AuthorityVerify;
 import com.moxi.mogublog.admin.annotion.AvoidRepeatableCommit.AvoidRepeatableCommit;
 import com.moxi.mogublog.admin.annotion.OperationLogger.OperationLogger;
 import com.moxi.mogublog.utils.ResultUtil;
+import com.moxi.mogublog.xo.dto.LinkPageDTO;
 import com.moxi.mogublog.xo.service.LinkService;
 import com.moxi.mogublog.xo.vo.LinkVO;
 import com.moxi.mougblog.base.exception.ThrowableUtils;
@@ -41,12 +42,12 @@ public class LinkRestApi {
     @AuthorityVerify
     @ApiOperation(value = "获取友链列表", notes = "获取友链列表", response = String.class)
     @PostMapping("/getList")
-    public String getList(@Validated({GetList.class}) @RequestBody LinkVO linkVO, BindingResult result) {
+    public String getList(@Validated({GetList.class}) @RequestBody LinkPageDTO pageDTO, BindingResult result) {
 
         // 参数校验
         ThrowableUtils.checkParamArgument(result);
         log.info("获取友链列表");
-        return ResultUtil.successWithData(linkService.getPageList(linkVO));
+        return ResultUtil.successWithData(linkService.getPageList(pageDTO));
     }
 
     @AvoidRepeatableCommit

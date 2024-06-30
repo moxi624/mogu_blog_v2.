@@ -4,8 +4,10 @@ import com.moxi.mogublog.admin.annotion.AuthorityVerify.AuthorityVerify;
 import com.moxi.mogublog.admin.annotion.AvoidRepeatableCommit.AvoidRepeatableCommit;
 import com.moxi.mogublog.admin.annotion.OperationLogger.OperationLogger;
 import com.moxi.mogublog.utils.ResultUtil;
+import com.moxi.mogublog.xo.dto.RolePageDTO;
 import com.moxi.mogublog.xo.service.RoleService;
 import com.moxi.mogublog.xo.vo.RoleVO;
+import com.moxi.mougblog.base.enums.EStatus;
 import com.moxi.mougblog.base.exception.ThrowableUtils;
 import com.moxi.mougblog.base.validator.group.Delete;
 import com.moxi.mougblog.base.validator.group.GetList;
@@ -40,12 +42,13 @@ public class RoleRestApi {
     @AuthorityVerify
     @ApiOperation(value = "获取角色信息列表", notes = "获取角色信息列表")
     @PostMapping("/getList")
-    public String getList(@Validated({GetList.class}) @RequestBody RoleVO roleVO, BindingResult result) {
+    public String getList(@Validated({GetList.class}) @RequestBody RolePageDTO pageDTO, BindingResult result) {
 
         // 参数校验
         ThrowableUtils.checkParamArgument(result);
         log.info("获取角色信息列表");
-        return ResultUtil.successWithData(roleService.getPageList(roleVO));
+        pageDTO.setStatus(EStatus.ENABLE);
+        return ResultUtil.successWithData(roleService.page(pageDTO));
     }
 
     @AvoidRepeatableCommit

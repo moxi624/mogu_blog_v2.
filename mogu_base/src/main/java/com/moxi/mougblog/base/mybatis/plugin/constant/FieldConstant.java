@@ -9,13 +9,13 @@ package com.moxi.mougblog.base.mybatis.plugin.constant;
 public class FieldConstant {
 
     /**
-     * 排序列，多个用逗号分开
+     * 升叙排序列
      */
-    public static final String ORDER_COLUMN = "orderColumn";
+    public static final String ORDER_BY_ASC_COLUMN = "orderByAscColumn";
 
     /**
-     * 排序类型(asc 或 desc)，多个用逗号分开
+     * 倒叙排序列
      */
-    public static final String ORDER_TYPE = "orderType";
+    public static final String ORDER_BY_DESC_COLUMN = "orderByDescColumn";
 
 }

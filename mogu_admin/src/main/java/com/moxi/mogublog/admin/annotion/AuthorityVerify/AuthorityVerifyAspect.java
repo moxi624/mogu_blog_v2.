@@ -92,9 +92,9 @@ public class AuthorityVerifyAspect {
 
             Role role = roleService.getById(roleUid);
 
-            String categoryMenuUids = role.getCategoryMenuUids();
+            String caetgoryMenuUids = role.getCategoryMenuUids();
 
-            String[] uids = categoryMenuUids.replace("[", "").replace("]", "").replace("\"", "").split(",");
+            String[] uids = caetgoryMenuUids.replace("[", "").replace("]", "").replace("\"", "").split(",");
 
             List<String> categoryMenuUids = new ArrayList<>(Arrays.asList(uids));
 
